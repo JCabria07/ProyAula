@@ -1,27 +1,137 @@
-#container {
+ion-content {
+  --background: #212529; 
+  overflow-y: auto;
+  font-family: "Times New Roman", Times, serif;
+}
+
+
+.hero-section,
+section.bg-light {
+  background-color: #212529 !important;
+  color: #fff !important;
+}
+
+.text-muted  {
+  color: #adb5bd !important; 
+}
+
+h1{
+  color: #adb5bd !important; 
   text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+/* Colores del logo */
+.text-warning {
+  color: #FFD43B !important;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+/* Ajustes de botones */
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
 }
 
-#container a {
-  text-decoration: none;
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 0.75rem 1.5rem rgba(255, 212, 59, 0.4); /* sombra amarilla del logo */
+  }
 }
+
+
+.bg-dark .card:hover {
+  box-shadow: 0 0.75rem 1.5rem rgba(255, 255, 255, 0.25);
+}
+
+
+/// heavy heavy //
+
+.tech-logo {
+  max-width: 150px;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  animation: spin 10s linear infinite;
+}
+
+.tech-logo:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(255, 212, 59, 0.8));
+}
+
+
+#carouselHero .carousel-item img {
+  height: 650px;          
+  object-fit: cover;      
+  width: 100%;
+  border-radius: .5rem;
+}
+
+#carouselHero {
+  
+  box-shadow: 0 0 20px rgba(255, 212, 59, 0.6); /* sombra amarilla */
+}
+
+.p{
+  text-align: justify;
+}
+
+
+
+/* Sección Tecnologías con gris más claro */
+.tech-section {
+  background-color: #2c3034; 
+  color: #fff;
+}
+
+/* Footer cpm gris distinto */
+footer {
+  background-color: #1a1d20; 
+  color: #fff;
+}
+
+
+.custom-footer {
+  background-color: #1a1d20;
+  color: #fff;
+
+  .footer-left p {
+    font-size: 0.9rem;
+    color: #adb5bd;
+  }
+
+  .footer-right p {
+    font-size: 1rem;
+    color: #fff;
+  }
+
+  .footer-app-icon {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 6px rgba(255, 212, 59, 0.7));
+      cursor: pointer;
+    }
+  }
+}
+
+
+
+
+/* Animación de giro */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+

@@ -1,0 +1,60 @@
+.login-bg {
+  --background: url('/assets/icon/background_login.png') no-repeat center center / cover;
+  min-height: 100vh;
+  color: #fff;
+
+  .card {
+    background: #fff;
+    color: #333;
+  }
+
+  h2 {
+    color: #fff;
+  }
+
+  .welcome-subtitle {
+    color: #f1f1f1;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: #2a5298;
+    border: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #1e3c72;
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-outline-danger {
+    border-width: 2px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #dc3545;
+      color: #fff;
+    }
+  }
+
+  .input-group-text {
+    border-right: 0;
+  }
+
+  .form-control {
+    border-left: 0;
+    &:focus {
+      box-shadow: none;
+      border-color: #2a5298;
+    }
+  }
+
+  hr {
+    border-top: 1px solid #ccc;
+  }
+}
