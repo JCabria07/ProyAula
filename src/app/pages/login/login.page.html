@@ -58,11 +58,55 @@
 
 
             <div class="d-flex justify-content-between">
-              <a href="#" class="text-decoration-none small">Forgot your password?</a>
+              <a href="#" class="text-decoration-none small" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">
+                Forgot your password?
+              </a>
             </div>
           </form>
         </div>
       </div>
     </div>
   </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" data-bs-backdrop="false" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-animated">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">
+          🔐 Recuperación de contraseña
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body text-justify">
+        <p>
+          Estimado usuario, en <strong>AssetControl</strong> el proceso de recuperación de contraseña es gestionado directamente por el administrador por motivos de seguridad y trazabilidad. Esto significa que cada solicitud será verificada manualmente, considerando accesos autorizados y privilegios a integrar en la sesión.
+        </p>
+        <p class="mt-3">
+          📧 Envíe un correo a <strong>admin@admin.com</strong> incluyendo los siguientes datos:
+        </p>
+        <ul class="list-unstyled ms-3">
+          <li>👤 <strong>Nombre completo</strong></li>
+          <li>🆔 <strong>Número de documento de identidad</strong></li>
+          <li>📮 <strong>Correo asignado</strong></li>
+        </ul>
+        <p class="mt-3">
+          Una vez recibida la solicitud, el administrador validará la información y se pondrá en contacto con usted para completar el proceso. Este procedimiento garantiza que el acceso al sistema se mantenga bajo control y que cada sesión esté respaldada por datos verificados.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success d-flex align-items-center gap-2" data-bs-dismiss="modal">
+          <i class="bi bi-check-circle-fill"></i> Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 </ion-content>

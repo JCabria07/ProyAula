@@ -53,22 +53,21 @@ export class AuthService {
 
   // Cerrar sesión
   async logout() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    // Registrar log de cierre de sesión si hay usuario en localStorage
-    if (user?.uid) {
-      await addDoc(collection(this.firestore, 'log_accion'), {
-        usuarioId: user.uid,
-        accion: 'logout',
-        detalle: 'Usuario cerró sesión',
-        fecha: serverTimestamp()
-      });
-    }
-
-    // Limpiar localStorage y cerrar sesión en Firebase
-    localStorage.removeItem('user');
-    return signOut(this.auth);
+  if (user?.uid && user?.email) {
+    await addDoc(collection(this.firestore, 'log_accion'), {
+      usuarioId: user.uid,
+      accion: 'logout',
+      detalle: `Usuario con correo ${user.email} ha cerrado sesión`,
+      fecha: serverTimestamp()
+    });
   }
+    // limpiar lokaltorage
+  localStorage.removeItem('user');
+  return signOut(this.auth);
+}
+
 
   // Login con Google
   async loginWithGoogle(): Promise<UserCredential> {
@@ -89,4 +88,9 @@ export class AuthService {
 
     return cred;
   }
+
+  
+
+
+
 }

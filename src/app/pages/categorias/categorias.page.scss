@@ -1,0 +1,35 @@
+.page-content {
+  margin-top: 25px; // ajusta el navbar height.
+}
+
+.row {
+  min-height: 70vh;
+}
+
+.vertical-divider {
+  width: 1px;
+  background-color: #ccc;
+  height: 100%;
+}
+
+.chart-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.no-resize {
+  resize: none; // evita que el textarea se pueda expandir
+}
+
+
+
+.card {
+  background-color: #FFD43B; 
+
+  border-radius: 8px;
+}
+ 
+
+.card-body {
+  background-color: #dcdcdc; 
+}

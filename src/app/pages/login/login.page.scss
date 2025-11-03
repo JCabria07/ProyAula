@@ -57,4 +57,32 @@
   hr {
     border-top: 1px solid #ccc;
   }
+
+
+.text-justify {
+  text-align: justify;
+}
+
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-modal-animated {
+  animation: fadeSlideUp 0.4s ease-out;
+  border-radius: 12px;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+
 }
