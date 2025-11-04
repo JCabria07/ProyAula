@@ -13,6 +13,6 @@ export class SpinnerService {
     this.loadingSubject.next(true);
     setTimeout(() => {
       this.loadingSubject.next(false);
-    }, 2000); // 2 secondz
+    }, 500); // 0,5 secondz
   }
 }

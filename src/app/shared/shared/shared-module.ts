@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
+import { FooterComponent } from 'src/app/components/footer/footer.component';
 
 @NgModule({
-  declarations: [NavbarComponent],
+  declarations: [NavbarComponent, FooterComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -17,7 +18,8 @@ import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    NavbarComponent
+    NavbarComponent,
+    FooterComponent
   ]
 })
 export class SharedModule {}
