@@ -22,7 +22,7 @@ export class NavbarComponent {
     await this.authService.logout();
 
     setTimeout(() => {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/home']);
     }, 1000);
   }
 }

@@ -11,15 +11,16 @@ export class LogService {
 
   // Registrar log
   async registrarLog(accion: string, detalle: string, usuario: any) {
-    const ref = collection(this.firestore, this.collectionName);
-    await addDoc(ref, {
-      usuarioId: usuario?.uid || null,
-      correo: usuario?.email || null,
-      accion,
-      detalle,
-      fecha: serverTimestamp()
-    });
-  }
+  const ref = collection(this.firestore, this.collectionName);
+  await addDoc(ref, {
+    usuarioId: usuario?.uid || null,
+    correo: usuario?.email || null,
+    accion: accion.toLowerCase(), 
+    detalle,
+    fecha: serverTimestamp()
+  });
+}
+
 
   // Obtener logs
   getLogs(): Observable<any[]> {

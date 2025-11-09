@@ -1,0 +1,17 @@
+.page-content {
+  margin-top: 25px;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+ion-content {
+  --background: #1e1e1e; // gris oscuro suave
+}
+
+input,
+select {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}

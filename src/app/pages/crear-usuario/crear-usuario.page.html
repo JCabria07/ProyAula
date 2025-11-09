@@ -1,0 +1,154 @@
+<ion-content fullscreen>
+  <app-navbar></app-navbar>
+
+  <div class="container py-4 page-content">
+    <h4 class="text-warning mb-4">
+      <i class="bi bi-person-plus me-2"></i> Crear nuevo usuario
+    </h4>
+
+    <form [formGroup]="usuarioForm" (ngSubmit)="crearUsuario()" novalidate>
+
+      <!-- Identificación -->
+      <div class="mb-3">
+        <label for="identificacion" class="form-label">
+          <i class="bi bi-credit-card me-2"></i> Número de identificación
+        </label>
+        <input type="number"
+               id="identificacion"
+               formControlName="identificacion"
+               class="form-control"
+               min="1"
+               step="1"
+               placeholder="Ej: 12345678"
+               [class.is-invalid]="submitted && usuarioForm.controls['identificacion'].invalid">
+        <div class="invalid-feedback">Este campo es obligatorio y debe ser mayor a cero.</div>
+      </div>
+
+      <!-- Nombre -->
+      <div class="mb-3">
+        <label for="nombre" class="form-label">
+          <i class="bi bi-person me-2"></i> Nombre completo
+        </label>
+        <input type="text"
+               id="nombre"
+               formControlName="nombre"
+               class="form-control"
+               placeholder="Ej: Juan Pérez"
+               [class.is-invalid]="submitted && usuarioForm.controls['nombre'].invalid">
+        <div class="invalid-feedback">Este campo es obligatorio.</div>
+      </div>
+
+      <!-- Correo -->
+      <div class="mb-3">
+        <label for="correo" class="form-label">
+          <i class="bi bi-envelope me-2"></i> Correo electrónico
+        </label>
+        <input type="email"
+               id="correo"
+               formControlName="correo"
+               class="form-control"
+               placeholder="Ej: juan@email.com"
+               [class.is-invalid]="submitted && usuarioForm.controls['correo'].invalid">
+        <div class="invalid-feedback">Ingresa un correo válido.</div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-3 position-relative">
+        <label for="contraseña" class="form-label">
+          <i class="bi bi-lock me-2"></i> Contraseña
+        </label>
+        <div class="input-group">
+          <input [type]="verPassword ? 'text' : 'password'"
+                 id="contraseña"
+                 formControlName="contraseña"
+                 class="form-control"
+                 placeholder="Mínimo 5 caracteres"
+                 [class.is-invalid]="submitted && usuarioForm.controls['contraseña'].invalid">
+          <button type="button" class="btn btn-outline-secondary" (click)="verPassword = !verPassword">
+            <i class="bi" [ngClass]="verPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback">La contraseña debe tener al menos 5 caracteres.</div>
+      </div>
+
+      <!-- Repetir contraseña -->
+      <div class="mb-3 position-relative">
+        <label for="repetir" class="form-label">
+          <i class="bi bi-lock-fill me-2"></i> Repetir contraseña
+        </label>
+        <div class="input-group">
+          <input [type]="verRepetir ? 'text' : 'password'"
+                 id="repetir"
+                 formControlName="repetir"
+                 class="form-control"
+                 placeholder="Confirma la contraseña"
+                 [class.is-invalid]="submitted && (usuarioForm.controls['repetir'].invalid || !coincidenContrasenas())">
+          <button type="button" class="btn btn-outline-secondary" (click)="verRepetir = !verRepetir">
+            <i class="bi" [ngClass]="verRepetir ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback">Las contraseñas deben coincidir.</div>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="mb-3">
+        <label for="telefono" class="form-label">
+          <i class="bi bi-telephone me-2"></i> Teléfono
+        </label>
+        <input type="text"
+               id="telefono"
+               formControlName="telefono"
+               class="form-control"
+               placeholder="Ej: 3001234567"
+               [class.is-invalid]="submitted && usuarioForm.controls['telefono'].invalid">
+        <div class="invalid-feedback">Este campo es obligatorio.</div>
+      </div>
+
+      <!-- Departamento -->
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <div class="w-100 me-2">
+          <label for="departamentoId" class="form-label">
+            <i class="bi bi-building me-2"></i> Departamento
+          </label>
+          <select id="departamentoId"
+                  formControlName="departamentoId"
+                  class="form-select"
+                  [class.is-invalid]="submitted && usuarioForm.controls['departamentoId'].invalid">
+            <option value="">Selecciona un departamento</option>
+            <option *ngFor="let depto of departamentos" [value]="depto.id">
+              {{ depto.nombre }}
+            </option>
+          </select>
+          <div class="invalid-feedback">Selecciona un departamento válido.</div>
+        </div>
+        <button type="button" class="btn btn-outline-success mt-4" (click)="abrirModalDepartamento()">
+          <i class="bi bi-plus-circle"></i>
+        </button>
+      </div>
+
+      <!-- Rol -->
+      <div class="mb-3">
+        <label for="rol" class="form-label">
+          <i class="bi bi-person-badge me-2"></i> Rol
+        </label>
+        <select id="rol"
+                formControlName="rol"
+                class="form-select"
+                [class.is-invalid]="submitted && usuarioForm.controls['rol'].invalid">
+          <option value="">Selecciona un rol</option>
+          <option value="admin">Administrador</option>
+          <option value="usuario">Usuario</option>
+        </select>
+        <div class="invalid-feedback">Selecciona un rol válido.</div>
+      </div>
+
+      <!-- Botón -->
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-check-circle me-1"></i> Crear usuario
+      </button>
+
+    </form>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

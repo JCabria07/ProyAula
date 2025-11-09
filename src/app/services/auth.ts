@@ -35,19 +35,19 @@ async login(email: string, password: string): Promise<UserCredential> {
 }
 
 
-  // Registro con email y contraseña
+  /// Registro con email y contraseña
 async register(email: string, password: string): Promise<UserCredential> {
   const cred = await createUserWithEmailAndPassword(this.auth, email, password);
   const user = cred.user;
 
-  // Guardar datos básicos en localStorage
-  const userData = { uid: user.uid, email: user.email };
-  localStorage.setItem('user', JSON.stringify(userData));
+  // NO guardamos en localStorage, porque el actor es el admin
+  // const userData = { uid: user.uid, email: user.email };
+  // localStorage.setItem('user', JSON.stringify(userData));
 
   // Registrar log en la colección log_accion
   await addDoc(collection(this.firestore, 'log_accion'), {
     usuarioId: user.uid,
-    correo: user.email, 
+    correo: user.email,
     accion: 'register',
     detalle: `Usuario con correo ${user.email} se registró`,
     fecha: serverTimestamp()
@@ -55,6 +55,7 @@ async register(email: string, password: string): Promise<UserCredential> {
 
   return cred;
 }
+
 
 
   // Cerrar sesión
