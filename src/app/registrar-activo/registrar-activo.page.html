@@ -15,6 +15,9 @@
         </label>
         <input type="text" id="nombreActivo" class="form-control" formControlName="nombre_activo" placeholder="Ej. Laptop Dell.">
         <div class="invalid-feedback">Ingresa un nombre válido.</div>
+        <div *ngIf="activoForm.get('nombre_activo')?.invalid && activoForm.get('nombre_activo')?.touched" class="text-danger mt-1">
+          <i class="bi bi-exclamation-circle-fill me-1"></i> El nombre es obligatorio.
+        </div>
       </div>
 
       <!-- Descripción -->
@@ -23,7 +26,12 @@
           <i class="bi bi-card-text me-2"></i> Descripción
         </label>
         <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3" placeholder="Detalles del activo"></textarea>
-        <div class="form-text text-warning"><i class="bi bi-exclamation-diamond-fill"></i> Mínimo 10 caracteres.</div>
+        <div class="form-text text-warning">
+          <i class="bi bi-exclamation-diamond-fill"></i> Mínimo 10 caracteres.
+        </div>
+        <div *ngIf="activoForm.get('descripcion')?.invalid && activoForm.get('descripcion')?.touched" class="text-danger mt-1">
+          <i class="bi bi-x-octagon-fill me-1"></i> La descripción debe tener al menos 10 caracteres.
+        </div>
       </div>
 
       <!-- Estado -->
@@ -38,6 +46,9 @@
           <option value="mtto">Mantenimiento</option>
           <option value="dado de baja">Dado de baja</option>
         </select>
+        <div *ngIf="activoForm.get('estado')?.invalid && activoForm.get('estado')?.touched" class="text-danger mt-1">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i> Selecciona un estado.
+        </div>
       </div>
 
       <!-- Chips preview del estado -->
@@ -59,11 +70,15 @@
             {{ cat.nombre_categoria }}
           </option>
         </select>
+        <div *ngIf="activoForm.get('categoriaId')?.invalid && activoForm.get('categoriaId')?.touched" class="text-danger mt-1">
+          <i class="bi bi-x-circle-fill me-1"></i> Selecciona una categoría.
+        </div>
       </div>
 
-      <!-- Botón -->
-      <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="activoForm.invalid">
-        <i class="bi bi-save me-2"></i> Registrar Activo
+      <!-- Botón con feedback -->
+      <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="activoForm.invalid || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        {{ loading ? 'Registrando...' : 'Registrar Activo' }}
       </button>
     </form>
   </div>

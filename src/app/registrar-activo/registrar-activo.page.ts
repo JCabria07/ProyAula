@@ -58,7 +58,11 @@ export class RegistrarActivoPage implements OnInit {
     }
   }
 
-  async registrarActivo() {
-    // 🚧 Pendiente: se implementará con un servicio
-  }
+  loading = false;
+
+async registrarActivo() {
+  this.loading = true;
+  // 🚧 Aquí irá la lógica del servicio
+  this.loading = false; }
+
 }
