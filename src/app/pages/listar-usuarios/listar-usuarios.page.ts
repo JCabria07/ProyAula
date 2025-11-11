@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ListarUsuariosService } from 'src/app/services/listar-usuarios';
 import { SpinnerService } from 'src/app/services/spinner';
+import { ToastService } from 'src/app/services/toast';
 import { Usuario } from 'src/app/models/usuario';
 
 @Component({
@@ -13,26 +14,27 @@ export class ListarUsuariosPage implements OnInit {
   usuarios: Usuario[] = [];
   loading = false;
 
-  // 🔹 Variables para el modal
+  // Variables para el modal
   modalAbierto = false;
   usuarioSeleccionado: Usuario | null = null;
 
   constructor(
     private listarUsuariosService: ListarUsuariosService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
-    // 🔹 Suscribirse al estado del spinner
+    // Suscribirse al estado del spinner
     this.spinnerService.loading$.subscribe(value => {
       this.loading = value;
     });
 
-    // 🔹 Mostrar spinner y cargar usuarios
+    // Mostrar spinner y cargar usuarios
     this.spinnerService.showSpinner();
     this.listarUsuariosService.getUsuarios().subscribe(data => {
       this.usuarios = data;
-      // El spinner se oculta automáticamente después de 0.5s (por tu servicio)
+      // El spinner se oculta automáticamente después de 0.5s
     });
   }
 
@@ -40,19 +42,20 @@ export class ListarUsuariosPage implements OnInit {
     this.spinnerService.showSpinner();
     try {
       await this.listarUsuariosService.resetPassword(usuario.correo);
-      console.log(`Correo de restablecimiento enviado a ${usuario.correo}`);
+      this.toastService.present(`Correo de restablecimiento enviado a ${usuario.correo}`, 'success');
     } catch (error) {
       console.error(error);
+      this.toastService.present('Error al enviar correo de restablecimiento', 'danger');
     }
   }
 
-  // 🔹 Abrir modal con la info del usuario
+  // Abrir modal con la info del usuario
   abrirModal(usuario: Usuario) {
     this.usuarioSeleccionado = usuario;
     this.modalAbierto = true;
   }
 
-  // 🔹 Cerrar modal
+  // Cerrar modal
   cerrarModal() {
     this.modalAbierto = false;
     this.usuarioSeleccionado = null;

@@ -1,0 +1,10 @@
+.page-content {
+  margin-top: 25px; // ajusta el navbar height.
+}
+
+textarea.form-control {
+  //width: 20rem;   // ancho fijo 
+  height: 15rem;  // alto fijo 
+  resize: none;   // evita que el usuario cambie el tamaño manualmente
+  overflow-y: auto; // scroll vertikal
+}

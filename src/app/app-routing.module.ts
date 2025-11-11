@@ -34,7 +34,11 @@ const routes: Routes = [
   {
     path: 'listar-usuarios',
     loadChildren: () => import('./pages/listar-usuarios/listar-usuarios.module').then( m => m.ListarUsuariosPageModule)
+  },  {
+    path: 'registrar-activo',
+    loadChildren: () => import('./registrar-activo/registrar-activo.module').then( m => m.RegistrarActivoPageModule)
   },
+
 ];
 
 @NgModule({

@@ -4,12 +4,18 @@ import { Usuario } from 'src/app/models/usuario';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Timestamp } from 'firebase/firestore';
+import { Auth, sendPasswordResetEmail } from '@angular/fire/auth';
+import { LogService } from './log'; //
 
 @Injectable({
   providedIn: 'root'
 })
 export class ListarUsuariosService {
-  constructor(private firestore: Firestore) {}
+  constructor(
+    private firestore: Firestore,
+    private auth: Auth, // inyectar Auth
+    private logService: LogService // inyectar LogService
+  ) {}
 
   getUsuarios(): Observable<Usuario[]> {
     const usuariosRef = collection(this.firestore, 'Usuarios');
@@ -27,6 +33,19 @@ export class ListarUsuariosService {
   }
 
   async resetPassword(correo: string): Promise<void> {
-    // lógica de restablecer contraseña
+  
+  await sendPasswordResetEmail(this.auth, correo);
+
+  // Obtener el usuario actual desde localStorage
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const actorEmail = currentUser?.email || 'sistema';
+  const actorUid = currentUser?.uid || null;
+
+  // Registrar en el log con el correo del actor
+  await this.logService.registrarLog(
+    'restablecer_contraseña',
+    `Se envió correo de restablecimiento a ${correo}`,
+    { uid: actorUid, email: actorEmail }
+  );
   }
 }
