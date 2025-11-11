@@ -27,7 +27,7 @@ export class CrearUsuarioPage {
     private departamentoService: DepartamentoService,
     private authService: AuthService,
     private toastService: ToastService,
-    private logService: LogService   // ✅ Inyectar correctamente el LogService
+    private logService: LogService   
   ) {
     this.usuarioForm = this.fb.group({
       identificacion: [null, [Validators.required, Validators.min(1)]],
@@ -51,33 +51,41 @@ export class CrearUsuarioPage {
   }
 
   async crearUsuario() {
-    this.submitted = true;
-    if (this.usuarioForm.invalid || !this.coincidenContrasenas()) return;
+  this.submitted = true;
+  if (this.usuarioForm.invalid || !this.coincidenContrasenas()) return;
 
-    const { correo, contraseña, repetir, ...datosUsuario } = this.usuarioForm.value;
+  const { correo, contraseña, repetir, ...datosUsuario } = this.usuarioForm.value;
 
-    try {
-      const cred = await this.authService.register(correo, contraseña);
-      const uid = cred.user.uid;
+  try {
+    const cred = await this.authService.register(correo, contraseña);
+    const uid = cred.user.uid;
 
-      const nuevoUsuario: Usuario = {
-        ...datosUsuario,
-        fechaCreacion: new Date(),
-      };
+    const nuevoUsuario: Usuario = {
+      ...datosUsuario,
+      correo,                
+      fechaCreacion: new Date(),
+    };
 
-      await addDoc(collection(this.firestore, 'Usuarios'), {
-        uid,
-        ...nuevoUsuario,
-      });
+    await addDoc(collection(this.firestore, 'Usuarios'), {
+      uid,
+      ...nuevoUsuario,
+    });
 
-      this.toastService.present(`Usuario ${datosUsuario.nombre} creado correctamente`, 'success');
-      this.usuarioForm.reset();          // Limpia todos los campos
-      this.submitted = false; 
-    } catch (error) {
-      console.error('Error al crear usuario:', error);
-      this.toastService.present('Error al crear usuario', 'danger');
-    }
+    await this.logService.registrarLog(
+      'crear_usuario',
+      `Usuario ${datosUsuario.nombre} creado`,
+      { uid, email: correo }
+    );
+
+    this.toastService.present(`Usuario ${datosUsuario.nombre} creado correctamente`, 'success');
+    this.usuarioForm.reset();          // Limpia todos los campos
+    this.submitted = false; 
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+    this.toastService.present('Error al crear usuario', 'danger');
   }
+}
+
 
   async abrirModalDepartamento() {
   const nombre = prompt('Nombre del nuevo departamento:');
