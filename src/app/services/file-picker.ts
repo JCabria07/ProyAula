@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { FilePicker } from '@capawesome/capacitor-file-picker';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from 'src/environments/environment';
 
@@ -13,18 +12,6 @@ export class FilePickerService {
     this.supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
   }
 
-  async requestPermissions() {
-    return await FilePicker.requestPermissions({
-      permissions: ['accessMediaLocation', 'readExternalStorage']
-    });
-  }
-
-  async pickPhotos() {
-    const result = await FilePicker.pickImages({
-      readData: true
-    });
-    return result.files; // Devuelve array de fotos
-  }
 
   /**
    * Sube un archivo al bucket "IMGs" de Supabase Storage

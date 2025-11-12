@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, addDoc, doc, updateDoc } from '@angular/fire/firestore';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import * as QRCode from 'qrcode';
 import { environment } from 'src/environments/environment';
 import { LogService } from './log';
@@ -9,32 +9,39 @@ import { LogService } from './log';
   providedIn: 'root'
 })
 export class RegistrarActivosService {
-  private supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
+  private supabase: SupabaseClient;
 
-  constructor(private firestore: Firestore, private logService: LogService) {}
+  constructor(private firestore: Firestore, private logService: LogService) {
+    this.supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
+  }
 
-  // 🔹 Subir una imagen al bucket
+  // Subir una imagen al bucket
   private async uploadImage(fileName: string, base64: string): Promise<string | null> {
-    const byteCharacters = atob(base64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'image/png' });
+    try {
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
 
-    const { error } = await this.supabase.storage.from('IMGs').upload(fileName, blob, {
-      contentType: 'image/png',
-      upsert: true
-    });
+      const { error } = await this.supabase.storage.from('IMGs').upload(fileName, blob, {
+        contentType: 'image/png',
+        upsert: true
+      });
 
-    if (error) {
-      console.error('Error al subir imagen:', error.message);
+      if (error) {
+        console.error('Error al subir imagen:', error.message);
+        return null;
+      }
+
+      const { data } = this.supabase.storage.from('IMGs').getPublicUrl(fileName);
+      return data.publicUrl;
+    } catch (err) {
+      console.error('Error en uploadImage:', err);
       return null;
     }
-
-    const { data } = this.supabase.storage.from('IMGs').getPublicUrl(fileName);
-    return data.publicUrl;
   }
 
   // 🔹 Registrar activo completo
@@ -77,11 +84,10 @@ export class RegistrarActivosService {
         await updateDoc(doc(this.firestore, 'activo', uid), { urlQr: qrUrl });
       }
 
-      // 4. Log de transacción
-     // this.logService.log('registro_activo', { uid, nombre: activoData.nombre, urls, qrUrl });
-
       return { uid, urls, qrUrl };
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.error('Error al registrar activo:', error);
       throw error;
     }

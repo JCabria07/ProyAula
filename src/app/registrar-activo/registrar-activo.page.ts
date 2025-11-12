@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Firestore } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, doc, updateDoc } from '@angular/fire/firestore';
 import { CategoriasService } from 'src/app/services/categorias';
 import { Categoria } from 'src/app/models/categoria';
 import { ToastService } from 'src/app/services/toast';
 import { LogService } from 'src/app/services/log';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import * as QRCode from 'qrcode';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-registrar-activo',
@@ -17,9 +20,10 @@ export class RegistrarActivoPage implements OnInit {
   categorias: Categoria[] = [];
   loading = false;
 
-  // Ahora arrays para múltiples imágenes
   fotoPreview: string[] = [];
   fotoBase64: string[] = [];
+
+  private supabase: SupabaseClient;
 
   constructor(
     private fb: FormBuilder,
@@ -28,6 +32,8 @@ export class RegistrarActivoPage implements OnInit {
     private toastService: ToastService,
     private logService: LogService
   ) {
+    this.supabase = createClient(environment.supabase.url, environment.supabase.anonKey);
+
     this.activoForm = this.fb.group({
       nombre_activo: ['', Validators.required],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
@@ -62,7 +68,6 @@ export class RegistrarActivoPage implements OnInit {
     }
   }
 
-  // Selección de archivos (múltiples imágenes)
   FileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -81,48 +86,101 @@ export class RegistrarActivoPage implements OnInit {
       reader.onload = () => {
         const dataUrl = reader.result as string;
         this.fotoPreview.push(dataUrl);
-        this.fotoBase64.push(dataUrl.split(',')[1]); // solo base64
+        this.fotoBase64.push(dataUrl.split(',')[1]);
       };
       reader.readAsDataURL(file);
     });
   }
 
-  // Resetear imágenes seleccionadas
   resetFoto() {
     this.fotoPreview = [];
     this.fotoBase64 = [];
   }
 
-  async registrarActivo() {
-    if (this.activoForm.invalid) {
-      this.activoForm.markAllAsTouched();
-      return;
+  private async uploadImage(fileName: string, base64: string): Promise<string | null> {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+
+    const { error } = await this.supabase.storage.from('IMGs').upload(fileName, blob, {
+      contentType: 'image/png',
+      upsert: true
+    });
+
+    if (error) {
+      console.error('Error al subir imagen:', error.message);
+      return null;
     }
 
-    this.loading = true;
-
-    const activo = {
-      ...this.activoForm.value,
-      fotos: this.fotoBase64, // ahora es un array
-      fecha_registro: new Date()
-    };
-
-    try {
-      // 🚧 Persistencia (Firestore o Supabase) va aquí
-      console.log('Activo registrado:', activo);
-
-      // Feedback y logs (descomenta si tus servicios están listos)
-      // this.toastService.success('Activo registrado correctamente');
-      // this.logService.log('registro_activo', { ...activo, fotos: this.fotoBase64.length });
-
-      // Limpieza
-      this.activoForm.reset();
-      this.resetFoto();
-    } catch (error) {
-      console.error(error);
-      // this.toastService.error('Error al registrar activo');
-    } finally {
-      this.loading = false;
-    }
+    const { data } = this.supabase.storage.from('IMGs').getPublicUrl(fileName);
+    return data.publicUrl;
   }
+
+  async registrarActivo() {
+  if (this.activoForm.invalid) {
+    this.activoForm.markAllAsTouched();
+    return;
+  }
+
+  this.loading = true;
+
+  try {
+    // 1. Subir imágenes al bucket
+    const urls: string[] = [];
+    for (let i = 0; i < this.fotoBase64.length; i++) {
+      const fileName = `activo_${Date.now()}_${i}.png`;
+      const url = await this.uploadImage(fileName, this.fotoBase64[i]);
+      if (url) urls.push(url);
+    }
+
+    // 2. Crear documento en Firestore
+    const fecha_registro = new Date();
+    const docRef = await addDoc(collection(this.firestore, 'activo'), {
+      ...this.activoForm.value,
+      urls,
+      fecha_registro
+    });
+
+    const uid = docRef.id;
+
+    // 3. Generar QR y subirlo
+    const qrDataUrl = await QRCode.toDataURL(uid);
+    const qrBase64 = qrDataUrl.split(',')[1];
+    const qrFileName = `qr_${uid}.png`;
+    const qrUrl = await this.uploadImage(qrFileName, qrBase64);
+
+    if (qrUrl) {
+      await updateDoc(doc(this.firestore, 'activo', uid), { urlQr: qrUrl });
+    }
+
+    // 4. Log de transacción con usuario de localStorage
+    const userStr = localStorage.getItem('user');
+    const usuario = userStr ? JSON.parse(userStr) : null;
+
+    await this.logService.registrarLog(
+      'crear_activo',
+      `Activo ${this.activoForm.value.nombre_activo} creado correctamente`,
+      usuario
+    );
+
+    // toast
+    await this.toastService.present(
+      `Activo ${this.activoForm.value.nombre_activo} creado correctamente`,
+      'success'
+    );
+
+    this.activoForm.reset();
+    this.resetFoto();
+  } catch (error) {
+    console.error(error);
+    await this.toastService.present('Error al registrar activo', 'danger');
+  } finally {
+    this.loading = false;
+  }
+}
+
 }
