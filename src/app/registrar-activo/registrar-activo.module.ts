@@ -9,6 +9,7 @@ import { RegistrarActivoPageRoutingModule } from './registrar-activo-routing.mod
 import { RegistrarActivoPage } from './registrar-activo.page';
 import { SharedModule } from '../shared/shared/shared-module';
 
+
 @NgModule({
   imports: [
     CommonModule,

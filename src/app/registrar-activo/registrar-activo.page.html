@@ -75,6 +75,40 @@
         </div>
       </div>
 
+      <!-- Foto del activo -->
+      <div class="mb-3">
+        <label class="form-label">
+          <i class="bi bi-camera me-2"></i> Foto del activo
+        </label>
+
+        <!-- Input -->
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          class="d-none"
+          #fileInput
+          (change)="FileSelect($event)" />
+
+        <!-- -->
+        <button
+          type="button"
+          class="btn btn-outline-primary w-100"
+          (click)="fileInput.click()">
+          <i class="bi bi-images me-2"></i> Seleccionar fotos
+        </button>
+
+        <div *ngIf="fotoPreview?.length" class="mt-3 text-center">
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <img *ngFor="let img of fotoPreview"
+                 [src]="img"
+                 class="img-thumbnail rounded shadow-sm"
+                 style="max-height: 150px;"
+                 alt="Vista previa">
+          </div>
+        </div>
+      </div>
+
       <!-- Botón con feedback -->
       <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="activoForm.invalid || loading">
         <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

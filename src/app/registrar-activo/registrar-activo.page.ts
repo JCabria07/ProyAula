@@ -15,6 +15,11 @@ import { LogService } from 'src/app/services/log';
 export class RegistrarActivoPage implements OnInit {
   activoForm: FormGroup;
   categorias: Categoria[] = [];
+  loading = false;
+
+  // Ahora arrays para múltiples imágenes
+  fotoPreview: string[] = [];
+  fotoBase64: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -32,8 +37,7 @@ export class RegistrarActivoPage implements OnInit {
   }
 
   ngOnInit() {
-    // Cargar categorías desde el servicio
-    this.categoriasService.getCategoriasList().subscribe(cats => {
+    this.categoriasService.getCategoriasList().subscribe((cats) => {
       this.categorias = cats;
     });
   }
@@ -58,11 +62,67 @@ export class RegistrarActivoPage implements OnInit {
     }
   }
 
-  loading = false;
+  // Selección de archivos (múltiples imágenes)
+  FileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
 
-async registrarActivo() {
-  this.loading = true;
-  // 🚧 Aquí irá la lógica del servicio
-  this.loading = false; }
+    if (!files || files.length === 0) {
+      this.fotoPreview = [];
+      this.fotoBase64 = [];
+      return;
+    }
 
+    this.fotoPreview = [];
+    this.fotoBase64 = [];
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        this.fotoPreview.push(dataUrl);
+        this.fotoBase64.push(dataUrl.split(',')[1]); // solo base64
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Resetear imágenes seleccionadas
+  resetFoto() {
+    this.fotoPreview = [];
+    this.fotoBase64 = [];
+  }
+
+  async registrarActivo() {
+    if (this.activoForm.invalid) {
+      this.activoForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+
+    const activo = {
+      ...this.activoForm.value,
+      fotos: this.fotoBase64, // ahora es un array
+      fecha_registro: new Date()
+    };
+
+    try {
+      // 🚧 Persistencia (Firestore o Supabase) va aquí
+      console.log('Activo registrado:', activo);
+
+      // Feedback y logs (descomenta si tus servicios están listos)
+      // this.toastService.success('Activo registrado correctamente');
+      // this.logService.log('registro_activo', { ...activo, fotos: this.fotoBase64.length });
+
+      // Limpieza
+      this.activoForm.reset();
+      this.resetFoto();
+    } catch (error) {
+      console.error(error);
+      // this.toastService.error('Error al registrar activo');
+    } finally {
+      this.loading = false;
+    }
+  }
 }
