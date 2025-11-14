@@ -34,9 +34,14 @@ const routes: Routes = [
   {
     path: 'listar-usuarios',
     loadChildren: () => import('./pages/listar-usuarios/listar-usuarios.module').then( m => m.ListarUsuariosPageModule)
-  },  {
+  },
+  {
     path: 'registrar-activo',
-    loadChildren: () => import('./registrar-activo/registrar-activo.module').then( m => m.RegistrarActivoPageModule)
+    loadChildren: () => import('./pages/registrar-activo/registrar-activo.module').then( m => m.RegistrarActivoPageModule)
+  },
+  {
+    path: 'listar-activos',
+    loadChildren: () => import('./pages/listar-activos/listar-activos.module').then( m => m.ListarActivosPageModule)
   },
 
 ];

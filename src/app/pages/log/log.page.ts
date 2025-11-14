@@ -67,6 +67,8 @@ export class LogPage implements OnInit {
       case 'login_google': return 'bi bi-google text-danger';
       case 'register': return 'bi bi-person-plus text-success';
       case 'crear_departamento': return 'bi bi-building text-success';
+      case 'crear_activo': return 'bi bi-balloon-heart-fill text-success';
+      case 'restablecer_contraseña': return 'bi bi-key-fill text-warning';
       default: return 'bi bi-info-circle text-muted';
     }
   }

@@ -1,0 +1,86 @@
+.page-content {
+  margin-top: 25px; // ajusta el navbar height.
+}
+
+.img-activo {
+  height: 250px;        /* altura fija */
+  object-fit: cover;    /* recorta la imagen manteniendo proporción */
+  border-radius: 4px;   /* esquinas redondeadas */
+}
+
+
+/* ====== Cards ====== */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(255, 212, 59, 0.8);
+  z-index: 2;
+}
+
+.card:hover {
+  transform: scale(1.1);
+}
+
+/* ====== Tipografía ====== */
+.card-title {
+  font-weight: 700;
+  color: #333;
+}
+
+.card-text {
+  font-weight: 300;
+  color: #666;
+}
+
+/* ====== Botones ====== */
+.card-footer .btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.card-footer .btn:hover {
+  transform: scale(1.05);
+}
+
+
+
+/* ====== Carousel ====== */
+.carousel-inner img {
+  border-radius: 12px 12px 0 0;
+}
+
+.carousel-indicators [data-bs-target] {
+  background-color: #FFD43B;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1) drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+
+/* ====== Modales ====== */
+ion-modal {
+  --border-radius: 12px;
+  --box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+ion-toolbar {
+  border-radius: 12px 12px 0 0;
+}
+
+ion-content img {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}

@@ -1,0 +1,179 @@
+<ion-content fullscreen>
+  <app-navbar></app-navbar>
+
+  <div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Listado de Activos</h2>
+      <input type="text" class="form-control w-25" placeholder="Buscar activo...">
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-4" *ngFor="let activo of activos; let i = index">
+        <div class="card h-100 shadow-sm border-0">
+
+          <!-- Carousel si hay varias imágenes -->
+          <ng-container *ngIf="activo.urls?.length > 1; else singleImage">
+            <div id="carouselActivo{{i}}" class="carousel slide">
+              <div class="carousel-indicators">
+                <button *ngFor="let url of activo.urls; let j = index"
+                        type="button"
+                        [attr.data-bs-target]="'#carouselActivo' + i"
+                        [attr.data-bs-slide-to]="j"
+                        [class.active]="j === 0"
+                        [attr.aria-current]="j === 0 ? 'true' : null"
+                        [attr.aria-label]="'Slide ' + (j+1)">
+                </button>
+              </div>
+              <div class="carousel-inner">
+                <div *ngFor="let url of activo.urls; let j = index"
+                     class="carousel-item"
+                     [class.active]="j === 0">
+                  <img [src]="url" class="d-block w-100 img-activo" alt="Imagen del activo">
+                </div>
+              </div>
+              <button class="carousel-control-prev" type="button"
+                      [attr.data-bs-target]="'#carouselActivo' + i" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+              </button>
+              <button class="carousel-control-next" type="button"
+                      [attr.data-bs-target]="'#carouselActivo' + i" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+              </button>
+            </div>
+          </ng-container>
+
+          <!-- Imagen única con fallback -->
+          <ng-template #singleImage>
+            <img [src]="activo.urls?.[0] || 'assets/img/placeholder.png'"
+                 class="card-img-top img-activo"
+                 alt="Imagen del activo">
+          </ng-template>
+
+          <hr>
+
+          <div class="card-body pt-2">
+            <h5 class="card-title mb-2 text-uppercase">{{ activo.nombre_activo }}</h5>
+            <p class="mb-2"><strong>Categoría:</strong> {{ activo.categoriaNombre }}</p>
+            <p class="mb-2">
+              <span class="badge" [ngClass]="estadoColorClass(activo.estado)">
+                <i [class]="estadoIcon(activo.estado)"></i> {{ activo.estado }}
+              </span>
+            </p>
+            <p class="card-text text-muted">{{ activo.descripcion }}</p>
+          </div>
+
+          <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+            <small class="text-muted me-2">
+              Registrado: {{ activo.fecha_registro | date:'short' }}
+            </small>
+            <div class="d-flex flex-row gap-1">
+              <button class="btn btn-outline-primary btn-sm d-flex align-items-center" (click)="abrirQrModal(activo)">
+                <i class="bi bi-qr-code me-1"></i> Ver QR
+              </button>
+
+              <button class="btn btn-outline-warning btn-sm d-flex align-items-center" (click)="abrirEditarModal(activo)">
+                <i class="bi bi-pencil me-1"></i> Editar
+              </button>
+
+              <button class="btn btn-outline-danger btn-sm d-flex align-items-center" (click)="darDeBaja(activo.uid)">
+                <i class="bi bi-x-circle me-1"></i> Dar de baja
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>
+
+<!-- Modal QR -->
+<ion-modal [isOpen]="isQrOpen" (didDismiss)="cerrarQrModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>
+          <ion-icon name="qr-code-outline" slot="start"></ion-icon>
+          QR del Activo
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarQrModal()">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding text-center">
+      <img [src]="activoSeleccionado?.urlQr"
+           alt="QR del activo"
+           style="max-width: 400px; width: 100%; height: auto;"
+           class="mx-auto d-block" />
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal Editar -->
+<ion-modal [isOpen]="isEditOpen" (didDismiss)="cerrarEditarModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Editar activo
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarEditarModal()">
+            <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form (ngSubmit)="guardarCambios()">
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input [(ngModel)]="activoSeleccionado.nombre_activo" name="nombre_activo"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Descripción</ion-label>
+          <ion-textarea [(ngModel)]="activoSeleccionado.descripcion" name="descripcion"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Estado</ion-label>
+          <ion-select [(ngModel)]="activoSeleccionado.estado" name="estado">
+            <ion-select-option value="disponible">Disponible</ion-select-option>
+            <ion-select-option value="prestado">Prestado</ion-select-option>
+            <ion-select-option value="mtto">Mantenimiento</ion-select-option>
+            <ion-select-option value="dado de baja">Dado de baja</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Categoría</ion-label>
+          <ion-select [(ngModel)]="activoSeleccionado.categoriaId" name="categoriaId">
+            <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">
+              {{ cat.nombre_categoria }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-buttons class="ion-justify-content-end ion-margin-top">
+          <ion-button color="medium" (click)="cerrarEditarModal()">
+            <ion-icon name="close-circle" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+          <ion-button color="success" type="submit">
+            <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+            Guardar
+          </ion-button>
+        </ion-buttons>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

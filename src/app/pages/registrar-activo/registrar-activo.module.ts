@@ -7,7 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { RegistrarActivoPageRoutingModule } from './registrar-activo-routing.module';
 
 import { RegistrarActivoPage } from './registrar-activo.page';
-import { SharedModule } from '../shared/shared/shared-module';
+import { SharedModule } from 'src/app/shared/shared/shared-module';
+
 
 
 @NgModule({
