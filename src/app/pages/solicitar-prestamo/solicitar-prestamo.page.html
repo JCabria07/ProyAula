@@ -1,0 +1,91 @@
+<ion-content fullscreen>
+  <!-- Navbar -->
+  <app-navbar></app-navbar>
+  <!-- Navbar -->
+
+  <div class="container mt-4">
+    <h2 class="mb-4">Solicitar préstamo</h2>
+
+    <!-- Spinner -->
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2"><i class="bi bi-hourglass-split me-2"></i> Procesando solicitud...</p>
+    </div>
+
+    <!-- Formulario -->
+    <form *ngIf="!loading" (ngSubmit)="enviarSolicitud()" #formPrestamo="ngForm">
+      <!-- Activo -->
+      <div class="mb-3">
+        <label class="form-label">Activo</label>
+        <select class="form-select" [(ngModel)]="form.activoId" name="activoId" required>
+          <option *ngFor="let a of activosDisponibles" [value]="a.uid">
+            {{ a.nombre_activo }} ({{ a.estado }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Fecha inicio -->
+      <div class="mb-3">
+        <label class="form-label">Fecha inicio</label>
+        <input type="date" class="form-control" [(ngModel)]="form.fechaInicio" name="fechaInicio"
+               (change)="recalcularDevolucion()" required>
+      </div>
+
+      <!-- Días solicitados -->
+      <div class="mb-3">
+        <label class="form-label">Días solicitados</label>
+        <input type="number" class="form-control" [(ngModel)]="form.dias" name="dias" min="1" max="30"
+               (input)="recalcularDevolucion()" required>
+      </div>
+
+      <!-- Fecha devolución -->
+      <div class="mb-3">
+        <label class="form-label">Fecha devolución</label>
+        <input type="text" class="form-control" [value]="form.fechaDevolucion" readonly>
+      </div>
+
+      <!-- Solicitante -->
+      <div class="mb-3">
+        <label class="form-label">Solicitante</label>
+        <input type="email" class="form-control" [(ngModel)]="form.solicitanteEmail" name="solicitanteEmail" required>
+      </div>
+
+      <!-- Observaciones -->
+      <div class="mb-3">
+        <label class="form-label">Observaciones</label>
+        <textarea class="form-control" [(ngModel)]="form.observaciones" name="observaciones" maxlength="500"></textarea>
+      </div>
+
+      <!-- Advertencia de conflicto -->
+      <div *ngIf="conflicto" class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        El activo tiene un préstamo en ese rango. Ajusta la fecha o días.
+      </div>
+
+      <!-- Botones -->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" (click)="guardarBorrador()" [disabled]="!formPrestamo.form.valid">
+          <i class="bi bi-save me-1"></i> Guardar borrador
+        </button>
+        <button type="submit" class="btn btn-success" [disabled]="!formPrestamo.form.valid || conflicto">
+          <i class="bi bi-send me-1"></i> Enviar solicitud
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirmación con Ion Alert -->
+  <ion-alert
+    [isOpen]="isConfirmOpen"
+    header="Confirmar envío"
+    message="¿Desea enviar esta solicitud de préstamo?"
+    [buttons]="confirmButtons"
+    (didDismiss)="isConfirmOpen=false">
+  </ion-alert>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+  <!-- Footer -->
+</ion-content>

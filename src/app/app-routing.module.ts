@@ -42,7 +42,11 @@ const routes: Routes = [
   {
     path: 'listar-activos',
     loadChildren: () => import('./pages/listar-activos/listar-activos.module').then( m => m.ListarActivosPageModule)
+  },  {
+    path: 'solicitar-prestamo',
+    loadChildren: () => import('./pages/solicitar-prestamo/solicitar-prestamo.module').then( m => m.SolicitarPrestamoPageModule)
   },
+
 
 ];
 
