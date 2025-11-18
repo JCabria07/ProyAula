@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SolicitarPrestamoPage implements OnInit {
   form = {
-    activoId: null,
+    activosSeleccionados: [] as string[], // varios activos
     fechaInicio: '',
     dias: 1,
     fechaDevolucion: '',
@@ -27,9 +27,9 @@ export class SolicitarPrestamoPage implements OnInit {
   ];
 
   activosDisponibles: any[] = [
-    { uid: 'A1', nombre_activo: 'Laptop Dell', estado: 'disponible' },
-    { uid: 'A2', nombre_activo: 'Proyector Epson', estado: 'disponible' },
-    { uid: 'A3', nombre_activo: 'Router Cisco', estado: 'mtto' }
+    { uid: 'A1', nombre_activo: 'Laptop Dell', estado: 'disponible', url: 'assets/img/laptop.png' },
+    { uid: 'A2', nombre_activo: 'Proyector Epson', estado: 'disponible', url: 'assets/img/proyector.png' },
+    { uid: 'A3', nombre_activo: 'Router Cisco', estado: 'mtto', url: 'assets/img/router.png' }
   ];
 
   constructor() {}
@@ -39,6 +39,17 @@ export class SolicitarPrestamoPage implements OnInit {
     this.form.solicitanteEmail = u ? JSON.parse(u).email : '';
   }
 
+  // Selección múltiple de activos
+  toggleActivoSeleccionado(event: any) {
+    const uid = event.target.value;
+    if (event.target.checked) {
+      this.form.activosSeleccionados.push(uid);
+    } else {
+      this.form.activosSeleccionados = this.form.activosSeleccionados.filter(id => id !== uid);
+    }
+  }
+
+  // Recalcular fecha devolución
   recalcularDevolucion() {
     if (!this.form.fechaInicio || !this.form.dias) return;
     const inicio = new Date(this.form.fechaInicio);
@@ -48,22 +59,17 @@ export class SolicitarPrestamoPage implements OnInit {
     this.verificarConflictos();
   }
 
+  // Verificar conflictos (ejemplo simple)
   verificarConflictos() {
-    // Aquí podrías consultar préstamos existentes
     this.conflicto = false;
   }
 
+  // Generar consecutivo tentativo
   generarConsecutivoTentativo() {
     const f = new Date();
     const ymd = `${f.getFullYear()}${String(f.getMonth() + 1).padStart(2, '0')}${String(f.getDate()).padStart(2, '0')}`;
     const rand = Math.floor(Math.random() * 9000) + 1000;
     this.consecutivo = `PR-${ymd}-${rand}`;
-  }
-
-  guardarBorrador() {
-    if (!this.consecutivo) this.generarConsecutivoTentativo();
-    console.log('Borrador guardado:', this.form, this.consecutivo);
-    alert('Borrador guardado correctamente');
   }
 
   enviarSolicitud() {
@@ -80,6 +86,25 @@ export class SolicitarPrestamoPage implements OnInit {
       alert('Error al enviar la solicitud');
     } finally {
       this.loading = false;
+    }
+  }
+
+  // Control de fechas válidas en ion-datetime
+  isDateEnabled = (dateIsoString: string) => {
+  const today = new Date();
+  const date = new Date(dateIsoString);
+  // Permite solo fechas >= hoy
+  return date >= new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  };
+
+
+  estadoColorClass(estado: string): string {
+    switch (estado) {
+      case 'disponible': return 'bg-success text-white';
+      case 'prestado': return 'bg-primary text-white';
+      case 'mtto': return 'bg-warning text-dark';
+      case 'dado de baja': return 'bg-danger text-white';
+      default: return 'bg-secondary text-white';
     }
   }
 }

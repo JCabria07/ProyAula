@@ -1,7 +1,5 @@
 <ion-content fullscreen>
-  <!-- Navbar -->
   <app-navbar></app-navbar>
-  <!-- Navbar -->
 
   <div class="container mt-4">
     <h2 class="mb-4">Solicitar préstamo</h2>
@@ -11,26 +9,53 @@
       <div class="spinner-border text-success" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
-      <p class="mt-2"><i class="bi bi-hourglass-split me-2"></i> Procesando solicitud...</p>
+      <p class="mt-2">Procesando solicitud...</p>
     </div>
 
     <!-- Formulario -->
     <form *ngIf="!loading" (ngSubmit)="enviarSolicitud()" #formPrestamo="ngForm">
-      <!-- Activo -->
-      <div class="mb-3">
-        <label class="form-label">Activo</label>
-        <select class="form-select" [(ngModel)]="form.activoId" name="activoId" required>
-          <option *ngFor="let a of activosDisponibles" [value]="a.uid">
-            {{ a.nombre_activo }} ({{ a.estado }})
-          </option>
-        </select>
-      </div>
 
-      <!-- Fecha inicio -->
+      <!-- Activos en acordeón -->
+      <ion-accordion-group>
+        <ion-accordion value="activos">
+          <ion-item slot="header">
+            <ion-label>Seleccionar Activos</ion-label>
+          </ion-item>
+          <div slot="content" class="row">
+            <div class="col-md-4 mb-3" *ngFor="let a of activosDisponibles">
+              <div class="card h-100 shadow-sm border-0">
+                <img [src]="a.url || 'assets/img/placeholder.png'" class="card-img-top" alt="Imagen del activo">
+                <div class="card-body">
+                  <h5 class="card-title">{{ a.nombre_activo }}</h5>
+                  <p class="card-text">
+                    <span class="badge" [ngClass]="estadoColorClass(a.estado)">
+                      {{ a.estado }}
+                    </span>
+                  </p>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           [value]="a.uid"
+                           (change)="toggleActivoSeleccionado($event)">
+                    <label class="form-check-label">Seleccionar</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+      <!-- Fecha inicio con ion-datetime -->
       <div class="mb-3">
         <label class="form-label">Fecha inicio</label>
-        <input type="date" class="form-control" [(ngModel)]="form.fechaInicio" name="fechaInicio"
-               (change)="recalcularDevolucion()" required>
+        <ion-datetime
+          [(ngModel)]="form.fechaInicio"
+          name="fechaInicio"
+          presentation="date"
+          class="shadow"
+          [isDateEnabled]="isDateEnabled"
+          (ionChange)="recalcularDevolucion()">
+        </ion-datetime>
       </div>
 
       <!-- Días solicitados -->
@@ -46,10 +71,10 @@
         <input type="text" class="form-control" [value]="form.fechaDevolucion" readonly>
       </div>
 
-      <!-- Solicitante -->
+      <!-- Solicitante (readonly desde localStorage) -->
       <div class="mb-3">
         <label class="form-label">Solicitante</label>
-        <input type="email" class="form-control" [(ngModel)]="form.solicitanteEmail" name="solicitanteEmail" required>
+        <input type="email" class="form-control" [(ngModel)]="form.solicitanteEmail" name="solicitanteEmail" readonly>
       </div>
 
       <!-- Observaciones -->
@@ -60,17 +85,13 @@
 
       <!-- Advertencia de conflicto -->
       <div *ngIf="conflicto" class="alert alert-warning">
-        <i class="bi bi-exclamation-triangle me-2"></i>
         El activo tiene un préstamo en ese rango. Ajusta la fecha o días.
       </div>
 
       <!-- Botones -->
       <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" (click)="guardarBorrador()" [disabled]="!formPrestamo.form.valid">
-          <i class="bi bi-save me-1"></i> Guardar borrador
-        </button>
         <button type="submit" class="btn btn-success" [disabled]="!formPrestamo.form.valid || conflicto">
-          <i class="bi bi-send me-1"></i> Enviar solicitud
+          Enviar solicitud
         </button>
       </div>
     </form>
@@ -85,7 +106,5 @@
     (didDismiss)="isConfirmOpen=false">
   </ion-alert>
 
-  <!-- Footer -->
   <app-footer></app-footer>
-  <!-- Footer -->
 </ion-content>
