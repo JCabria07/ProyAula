@@ -50,6 +50,10 @@ const routes: Routes = [
     path: 'historial-aprobaciones',
     loadChildren: () => import('./pages/historial-aprobaciones/historial-aprobaciones.module').then( m => m.HistorialAprobacionesPageModule)
   },
+  {
+    path: 'devolucion-prestamo',
+    loadChildren: () => import('./pages/devolucion-prestamo/devolucion-prestamo.module').then( m => m.DevolucionPrestamoPageModule)
+  },
 
 
 ];

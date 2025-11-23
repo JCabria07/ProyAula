@@ -47,6 +47,8 @@ export class SolicitarPrestamoService {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
 
+  
+
  // Aprobar o rechazar solicitud
 async actualizarEstado(uid: string, nuevoEstado: 'Aprobado' | 'Rechazado') {
   const user = JSON.parse(localStorage.getItem('user') || '{}');

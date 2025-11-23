@@ -41,7 +41,7 @@ export class SolicitarPrestamoPage implements OnInit {
       activosSeleccionados: this.fb.array([], Validators.required),
       fechaInicio: ['', Validators.required],
       dias: [1, [Validators.required, Validators.min(1), Validators.max(30)]],
-      fechaDevolucion: [{ value: '', disabled: true }],
+      fechaDevolucion: [{ value: '', disabled: true }], // se calcula automáticamente
       solicitanteEmail: [email, [Validators.required, Validators.email]],
       observaciones: ['', [Validators.required, Validators.maxLength(500)]]
     });
@@ -113,20 +113,18 @@ export class SolicitarPrestamoPage implements OnInit {
 
       if (!this.consecutivo) this.generarConsecutivoTentativo();
 
+      // Usamos getRawValue() para incluir fechaDevolucion
       await this.solicitarPrestamoService.crearPrestamo({
-        ...this.form.value,
+        ...this.form.getRawValue(),
         consecutivo: this.consecutivo!
       });
 
-      // Toast de éxito
       this.toastService.present(
         `Solicitud de préstamo con Código: ★[${this.consecutivo}]. Creado correctamente.`,
         'success'
       );
     } catch (e) {
       console.error('Error al enviar la solicitud', e);
-
-      // Toast de error
       this.toastService.present(
         'Error al crear la solicitud de préstamo. Intente nuevamente.',
         'danger'
