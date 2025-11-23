@@ -1,13 +1,130 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>historial-aprobaciones</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content fullscreen>
+  <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">historial-aprobaciones</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="container mt-4">
+    <h2 class="mb-4">
+      <i class="bi bi-clock-history me-2"></i> Historial de Aprobaciones
+    </h2>
+
+    <!-- Spinner de carga -->
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Cargando historial de solicitudes...</p>
+    </div>
+
+    <!-- Tabla de historial -->
+    <div *ngIf="!loading && prestamos.length > 0" class="table-responsive">
+      <table class="table table-striped table-hover shadow-sm align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th><i class="bi bi-hash me-1"></i> Código</th>
+            <th><i class="bi bi-person-circle me-1"></i> Solicitante</th>
+            <th><i class="bi bi-calendar-event me-1"></i> Fecha Inicio</th>
+            <th><i class="bi bi-calendar-check me-1"></i> Fecha Devolución</th>
+            <th><i class="bi bi-flag me-1"></i> Estado</th>
+            <th><i class="bi bi-person-badge me-1"></i> Aprobado por</th>
+            <th><i class="bi bi-clock me-1"></i> Fecha aprobación</th>
+            <th><i class="bi bi-gear me-1"></i> Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of prestamos">
+            <td>
+              <span class="badge bg-secondary">
+                <i class="bi bi-upc-scan me-1"></i>{{ p.consecutivo }}
+              </span>
+            </td>
+            <td>
+              <i class="bi bi-envelope-open me-1"></i>{{ p.solicitanteEmail }}
+            </td>
+            <td>
+              <i class="bi bi-calendar-date me-1"></i>{{ p.fechaInicio }}
+            </td>
+            <td>
+              <i class="bi bi-calendar-date-fill me-1"></i>{{ p.fechaDevolucion }}
+            </td>
+            <td>
+              <span [ngClass]="{
+                'badge bg-warning text-dark': p.estado === 'Por aprobar',
+                'badge bg-success': p.estado === 'Aprobado',
+                'badge bg-danger': p.estado === 'Rechazado'
+              }">
+                <i class="bi bi-info-circle me-1"></i>{{ p.estado }}
+              </span>
+            </td>
+            <td>
+              <i class="bi bi-person-check me-1"></i>{{ p.aprobadoPor || '-' }}
+            </td>
+            <td>
+              <i class="bi bi-clock-history me-1"></i>
+              {{ p.fechaAprobacion ? (p.fechaAprobacion.toDate() | date:'short') : '-' }}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="abrirModal(p)">
+                <i class="bi bi-eye me-1"></i> Ver detalle
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mensaje si no hay solicitudes -->
+    <div *ngIf="!loading && prestamos.length === 0" class="alert alert-info">
+      <i class="bi bi-info-circle me-1"></i> No hay solicitudes registradas en el historial.
+    </div>
+
+    <!-- Modal -->
+    <ion-modal [isOpen]="isModalOpen" (didDismiss)="cerrarModal()">
+      <ng-template>
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            Solicitud {{ solicitudSeleccionada?.consecutivo }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <p><i class="bi bi-person-circle me-1"></i><strong>Solicitante:</strong> {{ solicitudSeleccionada?.solicitanteEmail }}</p>
+          <p><i class="bi bi-calendar-event me-1"></i><strong>Fecha inicio:</strong> {{ solicitudSeleccionada?.fechaInicio }}</p>
+          <p><i class="bi bi-calendar-check me-1"></i><strong>Fecha devolución:</strong> {{ solicitudSeleccionada?.fechaDevolucion }}</p>
+          <p><i class="bi bi-chat-left-text me-1"></i><strong>Observaciones:</strong> {{ solicitudSeleccionada?.observaciones }}</p>
+          <p><i class="bi bi-flag me-1"></i><strong>Estado actual:</strong> {{ solicitudSeleccionada?.estado }}</p>
+          <p><i class="bi bi-person-badge me-1"></i><strong>Aprobado por:</strong> {{ solicitudSeleccionada?.aprobadoPor || '-' }}</p>
+          <p><i class="bi bi-clock-history me-1"></i><strong>Fecha aprobación:</strong> {{ solicitudSeleccionada?.fechaAprobacion ? (solicitudSeleccionada?.fechaAprobacion.toDate() | date:'short') : '-' }}</p>
+
+          <hr>
+          <h6><i class="bi bi-box-seam me-2"></i> Activos solicitados</h6>
+          <ul class="list-group">
+            <li *ngFor="let a of activosSolicitud" class="list-group-item">
+              <strong><i class="bi bi-cpu me-1"></i> {{ a.nombre_activo }}</strong><br>
+              <span class="badge bg-secondary ms-2"><i class="bi bi-tags me-1"></i>{{ a.categoriaNombre }}</span>
+              <span class="badge bg-success ms-2"><i class="bi bi-check-circle me-1"></i>{{ a.estado }}</span>
+              <span class="badge bg-primary ms-2"><i class="bi bi-calendar-plus me-1"></i> Fecha de creación: {{ a.fecha_registro }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-end gap-2">
+          <button 
+            class="btn btn-success" 
+            [disabled]="solicitudSeleccionada?.estado !== 'Por aprobar'"
+            (click)="confirmarAccion('aprobar')">
+            <i class="bi bi-check-circle me-2"></i> Aprobar solicitud
+          </button>
+          <button 
+            class="btn btn-danger" 
+            [disabled]="solicitudSeleccionada?.estado !== 'Por aprobar'"
+            (click)="confirmarAccion('rechazar')">
+            <i class="bi bi-x-circle me-2"></i> Rechazar solicitud
+          </button>
+        </div>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+  <app-footer></app-footer>
 </ion-content>
