@@ -46,6 +46,10 @@ const routes: Routes = [
     path: 'solicitar-prestamo',
     loadChildren: () => import('./pages/solicitar-prestamo/solicitar-prestamo.module').then( m => m.SolicitarPrestamoPageModule)
   },
+  {
+    path: 'historial-aprobaciones',
+    loadChildren: () => import('./pages/historial-aprobaciones/historial-aprobaciones.module').then( m => m.HistorialAprobacionesPageModule)
+  },
 
 
 ];

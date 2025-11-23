@@ -39,7 +39,7 @@ export class ListarActivosService {
           // urls: asegurar array
           const urls = Array.isArray(activo?.urls) ? activo.urls : [];
 
-          // resolver nombre de categoría por UID (fallback al UID si no existe)
+          // resolver nombre de categoría por UID 
           const categoriaUid = activo?.categoriaId ?? '';
           const categoriaNombre = catMap.get(categoriaUid) ?? categoriaUid;
 

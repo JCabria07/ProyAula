@@ -1,3 +1,21 @@
 .page-content {
   margin-top: 25px; // ajusta el navbar height.
 }
+
+.img-activo {
+  width: 300px;
+  height: 300px;
+  object-fit: cover; // recorta manteniendo proporción
+  margin: 0 auto;    // centra la imagen
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+
+textarea {
+  max-height: 100px;   // límite
+  overflow-y: auto;    // scroll vertical
+  resize: vertical;    // expandir solo verticalmente
+}

@@ -2,96 +2,178 @@
   <app-navbar></app-navbar>
 
   <div class="container mt-4">
-    <h2 class="mb-4">Solicitar préstamo</h2>
+    <h2 class="mb-4">
+      <i class="bi bi-journal-plus me-2"></i> Solicitar préstamo
+    </h2>
 
     <!-- Spinner -->
     <div *ngIf="loading" class="text-center py-4">
       <div class="spinner-border text-success" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
-      <p class="mt-2">Procesando solicitud...</p>
+      <p class="mt-2">
+        <i class="bi bi-hourglass-split me-2"></i> Procesando solicitud...
+      </p>
     </div>
 
     <!-- Formulario -->
-    <form *ngIf="!loading" (ngSubmit)="enviarSolicitud()" #formPrestamo="ngForm">
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="enviarSolicitud()">
 
       <!-- Activos en acordeón -->
       <ion-accordion-group>
         <ion-accordion value="activos">
           <ion-item slot="header">
-            <ion-label>Seleccionar Activos</ion-label>
+            <ion-label>
+              <i class="bi bi-box-seam me-2"></i> Seleccionar Activos
+            </ion-label>
           </ion-item>
           <div slot="content" class="row">
-            <div class="col-md-4 mb-3" *ngFor="let a of activosDisponibles">
+            <div class="col-md-4 mb-3" *ngFor="let a of activosDisponiblesFiltrados; let i = index">
               <div class="card h-100 shadow-sm border-0">
-                <img [src]="a.url || 'assets/img/placeholder.png'" class="card-img-top" alt="Imagen del activo">
+                <!-- Imagen -->
+                <img [src]="a.urls?.[0] || 'assets/img/placeholder.png'"
+                     class="card-img-top img-activo"
+                     alt="Imagen del activo">
+
                 <div class="card-body">
-                  <h5 class="card-title">{{ a.nombre_activo }}</h5>
+                  <h5 class="card-title">
+                    <i class="bi bi-laptop me-2"></i> {{ a.nombre_activo }}
+                  </h5>
+
+                  <!-- Estado -->
                   <p class="card-text">
-                    <span class="badge" [ngClass]="estadoColorClass(a.estado)">
+                    <span class="badge" [class]="estadoColorClass(a.estado)">
                       {{ a.estado }}
                     </span>
                   </p>
+
+                  <!-- Descripción -->
+                  <p class="card-text text-justify">
+                    <i class="bi bi-card-text me-2"></i> {{ a.descripcion }}
+                  </p>
+
+                  <!-- Categoría -->
+                  <p class="card-text">
+                    <i class="bi bi-tags me-2"></i> <strong>Categoría:</strong> {{ a.categoriaNombre }}
+                  </p>
+                  <hr>
+
+                  <!-- Checkbox selección -->
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox"
                            [value]="a.uid"
                            (change)="toggleActivoSeleccionado($event)">
-                    <label class="form-check-label">Seleccionar</label>
+                    <label class="form-check-label">
+                      <i class="bi bi-check2-square me-2"></i> Seleccionar
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </ion-accordion>
-      </ion-accordion-group>
+      </ion-accordion-group><br>
 
-      <!-- Fecha inicio con ion-datetime -->
+      <!-- Fecha inicio -->
       <div class="mb-3">
-        <label class="form-label">Fecha inicio</label>
+        <label class="form-label">
+          <i class="bi bi-calendar-event me-2"></i> Fecha inicio
+        </label>
         <ion-datetime
-          [(ngModel)]="form.fechaInicio"
-          name="fechaInicio"
+          formControlName="fechaInicio"
           presentation="date"
           class="shadow"
-          [isDateEnabled]="isDateEnabled"
+          [min]="minDate"
           (ionChange)="recalcularDevolucion()">
         </ion-datetime>
+        <div *ngIf="form.get('fechaInicio')?.touched && form.get('fechaInicio')?.errors?.['required']" class="invalid-feedback d-block">
+          Debe seleccionar una fecha de inicio.
+        </div>
       </div>
 
       <!-- Días solicitados -->
       <div class="mb-3">
-        <label class="form-label">Días solicitados</label>
-        <input type="number" class="form-control" [(ngModel)]="form.dias" name="dias" min="1" max="30"
-               (input)="recalcularDevolucion()" required>
+        <label class="form-label">
+          <i class="bi bi-clock-history me-2"></i> Días solicitados
+        </label>
+        <input type="number"
+               class="form-control"
+               [ngClass]="{
+                 'is-invalid': form.get('dias')?.touched && form.get('dias')?.invalid,
+                 'is-valid': form.get('dias')?.touched && form.get('dias')?.valid
+               }"
+               formControlName="dias"
+               (input)="recalcularDevolucion()">
+        <div *ngIf="form.get('dias')?.touched && form.get('dias')?.errors?.['required']" class="invalid-feedback">
+          Este campo es obligatorio.
+        </div>
+        <div *ngIf="form.get('dias')?.touched && form.get('dias')?.errors?.['min']" class="invalid-feedback">
+          Debe ser al menos 1 día.
+        </div>
+        <div *ngIf="form.get('dias')?.touched && form.get('dias')?.errors?.['max']" class="invalid-feedback">
+          No puede superar los 30 días.
+        </div>
       </div>
 
       <!-- Fecha devolución -->
       <div class="mb-3">
-        <label class="form-label">Fecha devolución</label>
-        <input type="text" class="form-control" [value]="form.fechaDevolucion" readonly>
+        <label class="form-label">
+          <i class="bi bi-calendar-check me-2"></i> Fecha devolución
+        </label>
+        <input type="text" class="form-control" formControlName="fechaDevolucion" readonly>
       </div>
 
-      <!-- Solicitante (readonly desde localStorage) -->
+      <!-- Solicitante -->
       <div class="mb-3">
-        <label class="form-label">Solicitante</label>
-        <input type="email" class="form-control" [(ngModel)]="form.solicitanteEmail" name="solicitanteEmail" readonly>
+        <label class="form-label">
+          <i class="bi bi-person-circle me-2"></i> Solicitante
+        </label>
+        <input type="email"
+               class="form-control"
+               [ngClass]="{
+                 'is-invalid': form.get('solicitanteEmail')?.touched && form.get('solicitanteEmail')?.invalid,
+                 'is-valid': form.get('solicitanteEmail')?.touched && form.get('solicitanteEmail')?.valid
+               }"
+               formControlName="solicitanteEmail"
+               readonly>
+        <div *ngIf="form.get('solicitanteEmail')?.touched && form.get('solicitanteEmail')?.errors?.['required']" class="invalid-feedback">
+          El correo es obligatorio.
+        </div>
+        <div *ngIf="form.get('solicitanteEmail')?.touched && form.get('solicitanteEmail')?.errors?.['email']" class="invalid-feedback">
+          Debe ingresar un correo válido.
+        </div>
       </div>
 
       <!-- Observaciones -->
       <div class="mb-3">
-        <label class="form-label">Observaciones</label>
-        <textarea class="form-control" [(ngModel)]="form.observaciones" name="observaciones" maxlength="500"></textarea>
+        <label class="form-label">
+          <i class="bi bi-pencil-square me-2"></i> Observaciones
+        </label>
+        <textarea class="form-control"
+                  [ngClass]="{
+                    'is-invalid': form.get('observaciones')?.touched && form.get('observaciones')?.invalid,
+                    'is-valid': form.get('observaciones')?.touched && form.get('observaciones')?.valid
+                  }"
+                  formControlName="observaciones"
+                  maxlength="500"></textarea>
+        <div *ngIf="form.get('observaciones')?.touched && form.get('observaciones')?.errors?.['required']" class="invalid-feedback">
+          Este campo es obligatorio.
+        </div>
+        <div *ngIf="form.get('observaciones')?.touched && form.get('observaciones')?.errors?.['maxlength']" class="invalid-feedback">
+          Máximo 500 caracteres permitidos.
+        </div>
       </div>
 
       <!-- Advertencia de conflicto -->
       <div *ngIf="conflicto" class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
         El activo tiene un préstamo en ese rango. Ajusta la fecha o días.
       </div>
 
       <!-- Botones -->
       <div class="d-flex justify-content-end gap-2">
-        <button type="submit" class="btn btn-success" [disabled]="!formPrestamo.form.valid || conflicto">
-          Enviar solicitud
+        <button type="submit" class="btn btn-success" [disabled]="form.invalid || conflicto">
+          <i class="bi bi-send-check me-2"></i> Enviar solicitud
         </button>
       </div>
     </form>
