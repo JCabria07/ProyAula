@@ -26,8 +26,9 @@ export class DevolucionPrestamoPage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.loading = true;
+    
     try {
+      this.loading = true;
       // Cargar préstamos aprobados desde el servicio
       this.prestamosAprobados = await this.devolucionService.listarPrestamosAprobados();
 
