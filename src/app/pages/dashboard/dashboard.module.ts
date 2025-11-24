@@ -8,6 +8,7 @@ import { DashboardPageRoutingModule } from './dashboard-routing.module';
 
 import { DashboardPage } from './dashboard.page';
 import { SharedModule } from 'src/app/shared/shared/shared-module';
+import { AgChartsModule } from 'ag-charts-angular';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SharedModule } from 'src/app/shared/shared/shared-module';
     FormsModule,
     IonicModule,
     DashboardPageRoutingModule,
-    SharedModule
+    SharedModule,
+    AgChartsModule
   ],
   declarations: [DashboardPage]
 })

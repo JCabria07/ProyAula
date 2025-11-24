@@ -2,7 +2,6 @@
   <app-navbar></app-navbar>
 
   <div class="container py-4">
-
     <!-- Spinner de carga -->
     <div *ngIf="loading" class="text-center py-5">
       <div class="spinner-border text-success" role="status">
@@ -16,19 +15,22 @@
 
     <!-- Contenido principal -->
     <div *ngIf="!loading">
-
       <!-- Encabezado de filtros -->
       <h5 class="text-secondary mb-3">
         <i class="bi bi-filter-circle me-2"></i> Filtros de auditoría
       </h5>
 
-
       <!-- Contenedor de filtros -->
-      <div class="filtros-container d-flex flex-wrap justify-content-between align-items-center px-3 py-2">
-
+      <div
+        class="filtros-container d-flex flex-wrap justify-content-between align-items-center px-3 py-2"
+      >
         <!-- Filtro por usuario -->
         <div class="dropdown me-2 mb-2">
-          <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <button
+            class="btn btn-outline-primary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
             <i class="bi bi-person-circle me-1"></i>
             {{ filtroUsuario || 'Todos los usuarios' }}
           </button>
@@ -48,7 +50,11 @@
 
         <!-- Filtro por acción -->
         <div class="dropdown me-2 mb-2">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          <button
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
             <i class="bi bi-funnel me-1"></i>
             {{ filtroAccion || 'Todas las acciones' }}
           </button>
@@ -58,29 +64,10 @@
                 <i class="bi bi-list me-1"></i> Todas
               </button>
             </li>
-            <li>
-              <button class="dropdown-item" (click)="setFiltroAccion('login')">
-                <i class="bi bi-box-arrow-in-right text-primary me-1"></i> Login
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item" (click)="setFiltroAccion('logout')">
-                <i class="bi bi-box-arrow-right text-secondary me-1"></i> Logout
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item" (click)="setFiltroAccion('crear_categoria')">
-                <i class="bi bi-plus-circle text-success me-1"></i> Crear categoría
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item" (click)="setFiltroAccion('editar_categoria')">
-                <i class="bi bi-pencil-square text-warning me-1"></i> Editar categoría
-              </button>
-            </li>
-            <li>
-              <button class="dropdown-item" (click)="setFiltroAccion('eliminar_categoria')">
-                <i class="bi bi-trash text-danger me-1"></i> Eliminar categoría
+            <li *ngFor="let accion of acciones">
+              <button class="dropdown-item" (click)="setFiltroAccion(accion)">
+                <i [class]="getIcon(accion)" class="me-1"></i>
+                {{ getAccionLabel(accion) }}
               </button>
             </li>
           </ul>
@@ -93,28 +80,32 @@
       </div>
 
       <!-- Separador visual -->
-      <hr class="my-3 border-top border-secondary opacity-25">
+      <hr class="my-3 border-top border-secondary opacity-25" />
 
       <!-- Lista de logs -->
       <ion-list>
         <ion-item *ngFor="let log of logsFiltrados" class="log-item">
-          <div class="log-icon" [ngClass]="log.accion" slot="start" [attr.title]="log.accion">
+          <div
+            class="log-icon"
+            [ngClass]="log.accion"
+            slot="start"
+            [attr.title]="log.accion"
+          >
             <i [class]="getIcon(log.accion)"></i>
           </div>
           <ion-label>
             <h2>{{ log.detalle }}</h2>
             <p>
               <i class="bi bi-person-circle me-1"></i>{{ log.correo }} •
-              <i class="bi bi-clock me-1"></i>{{ log.fecha?.toDate() | date:'medium' }}
+              <i class="bi bi-clock me-1"></i
+              >{{ log.fecha?.toDate() | date: 'medium' }}
             </p>
           </ion-label>
-</ion-item>
-
+        </ion-item>
       </ion-list>
 
       <!-- Footer -->
       <app-footer></app-footer>
-
     </div>
   </div>
 </ion-content>

@@ -1,24 +1,116 @@
 <ion-content fullscreen>
-<app-navbar></app-navbar>
+  <app-navbar></app-navbar>
 
-<div class="page-content">
-  <div class="row g-3 justify-content-center">
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/angular-icon.png" class="tech-logo" alt="Angular"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/ionic-icon.png" class="tech-logo" alt="Ionic"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/google-firebase-icon.png" class="tech-logo" alt="Firebase"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/bootstrap-5-logo-icon.png" class="tech-logo" alt="Bootstrap-5"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/node-js-icon.png" class="tech-logo" alt="Node.js"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/html-icon.png" class="tech-logo" alt="HTML"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/css-icon.png" class="tech-logo" alt="CSS"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/supabase-icon.png" class="tech-logo" alt="SUPABASE"></div>
-      <div class="col-4 col-md-2"><img src="/assets/icon/brands/typescript-programming-language-icon.png" class="tech-logo" alt="TYPESCRIPT"></div>
-      <div class="col-4 col-md-2"><img src="\assets\icon\brands\visual-studio-code-icon.png" class="tech-logo" alt="Visual Code"></div>
-      <div class="col-4 col-md-2"><img src="\assets\icon\brands\npm-icon.png" class="tech-logo" alt="NPM"></div>
+  <div #dashboardContainer class="dashboard-container container mt-4">
+
+    <!-- 1. Activos disponibles -->
+    <div data-swapy-slot="slot-activos">
+      <div data-swapy-item="activos" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-box-seam fs-3 mb-2 text-warning"></i>
+        <h6>Activos disponibles</h6>
+        <p class="fw-bold">{{ activosDisponibles }}</p>
+      </div>
     </div>
-</div>
 
-<!-- Footer -->
-      <app-footer></app-footer>
-<!-- Footer -->
+    <!-- 2. Categorías existentes -->
+    <div data-swapy-slot="slot-categorias">
+      <div data-swapy-item="categorias" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-tags fs-3 mb-2 text-primary"></i>
+        <h6>Categorías existentes</h6>
+        <p class="fw-bold">{{ totalCategorias }}</p>
+      </div>
+    </div>
 
+    <!-- 3. Fecha y hora -->
+    <div data-swapy-slot="slot-fecha">
+      <div data-swapy-item="fecha" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-calendar-date fs-3 mb-2 text-success"></i>
+        <h6>Fecha y hora actual</h6>
+        <p class="fw-bold">{{ fechaActual | date:'fullDate' }}</p>
+        <p class="text-muted">{{ fechaActual | date:'shortTime' }}</p>
+      </div>
+    </div>
+
+    <!-- 4. Total préstamos -->
+    <div data-swapy-slot="slot-total">
+      <div data-swapy-item="total" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-journal-text fs-3 mb-2 text-primary"></i>
+        <h6>Total préstamos</h6>
+        <p class="fw-bold">{{ totalPrestamos }}</p>
+      </div>
+    </div>
+
+    <!-- 5. Préstamos pendientes -->
+    <div data-swapy-slot="slot-pendientes">
+      <div data-swapy-item="pendientes" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-hourglass-split fs-3 mb-2 text-warning"></i>
+        <h6>Préstamos pendientes por aprobar</h6>
+        <p class="fw-bold">{{ prestamosPendientes }}</p>
+      </div>
+    </div>
+
+    <!-- 6. Datos de usuario -->
+    <div data-swapy-slot="slot-usuario">
+      <div data-swapy-item="usuario" class="card p-3 mb-4 shadow-sm">
+        <h5><i class="bi bi-person-badge me-2 text-primary"></i> Datos de usuario</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <i class="bi bi-person-circle me-2"></i>
+            UID: {{ uid }}
+          </li>
+          <li class="list-group-item">
+            <i class="bi bi-envelope me-2"></i>
+            Correo: {{ correo }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 7. Devueltos -->
+    <div data-swapy-slot="slot-devueltos">
+      <div data-swapy-item="devueltos" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-arrow-return-left fs-3 mb-2 text-info"></i>
+        <h6>Devueltos</h6>
+        <p class="fw-bold">{{ prestamosDevueltos }}</p>
+      </div>
+    </div>
+
+    <!-- 8. Aprobados -->
+    <div data-swapy-slot="slot-aprobados">
+      <div data-swapy-item="aprobados" class="card p-3 text-center shadow-sm">
+        <i class="bi bi-check-circle fs-3 mb-2 text-success"></i>
+        <h6>Préstamos aprobados</h6>
+        <p class="fw-bold">{{ prestamosAprobados }}</p>
+      </div>
+    </div>
+
+    <!-- 9. Últimas solicitudes -->
+    <div data-swapy-slot="slot-solicitudes">
+      <div data-swapy-item="solicitudes" class="card p-3 mb-4 shadow-sm">
+        <h5><i class="bi bi-clock-history me-2"></i> Últimas solicitudes</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let s of ultimasSolicitudes">
+            <i class="bi bi-person-circle me-2"></i>
+            {{ s.consecutivo }} - {{ s.solicitanteEmail }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 10. Logs recientes -->
+    <div data-swapy-slot="slot-logs">
+      <div data-swapy-item="logs" class="card p-3 mb-4 shadow-sm">
+        <h5><i class="bi bi-list-check me-2"></i> Logs recientes</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let log of logs">
+            <i class="bi bi-journal-check me-2"></i>
+            {{ log.fecha | date:'short' }} - {{ log.detalle }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <app-footer></app-footer>
 </ion-content>

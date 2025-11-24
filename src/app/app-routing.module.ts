@@ -1,67 +1,78 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { authGuard, noAuthGuard } from './guards/auth-guard';
 
 const routes: Routes = [
+  // Home y Login = solo si NO estás logueado
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
-  },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
+    canActivate: [noAuthGuard],
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+    canActivate: [noAuthGuard],
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule)
   },
+
+  // Dashboard y demás privadas = requieren sesión
   {
     path: 'dashboard',
-    loadChildren: () => import('./pages/dashboard/dashboard.module').then( m => m.DashboardPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.DashboardPageModule)
   },
   {
     path: 'categorias',
-    loadChildren: () => import('./pages/categorias/categorias.module').then( m => m.CategoriasPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/categorias/categorias.module').then(m => m.CategoriasPageModule)
   },
   {
     path: 'log',
-    loadChildren: () => import('./pages/log/log.module').then( m => m.LogPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/log/log.module').then(m => m.LogPageModule)
   },
   {
     path: 'crear-usuario',
-    loadChildren: () => import('./pages/crear-usuario/crear-usuario.module').then( m => m.CrearUsuarioPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/crear-usuario/crear-usuario.module').then(m => m.CrearUsuarioPageModule)
   },
   {
     path: 'listar-usuarios',
-    loadChildren: () => import('./pages/listar-usuarios/listar-usuarios.module').then( m => m.ListarUsuariosPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/listar-usuarios/listar-usuarios.module').then(m => m.ListarUsuariosPageModule)
   },
   {
     path: 'registrar-activo',
-    loadChildren: () => import('./pages/registrar-activo/registrar-activo.module').then( m => m.RegistrarActivoPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/registrar-activo/registrar-activo.module').then(m => m.RegistrarActivoPageModule)
   },
   {
     path: 'listar-activos',
-    loadChildren: () => import('./pages/listar-activos/listar-activos.module').then( m => m.ListarActivosPageModule)
-  },  {
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/listar-activos/listar-activos.module').then(m => m.ListarActivosPageModule)
+  },
+  {
     path: 'solicitar-prestamo',
-    loadChildren: () => import('./pages/solicitar-prestamo/solicitar-prestamo.module').then( m => m.SolicitarPrestamoPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/solicitar-prestamo/solicitar-prestamo.module').then(m => m.SolicitarPrestamoPageModule)
   },
   {
     path: 'historial-aprobaciones',
-    loadChildren: () => import('./pages/historial-aprobaciones/historial-aprobaciones.module').then( m => m.HistorialAprobacionesPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/historial-aprobaciones/historial-aprobaciones.module').then(m => m.HistorialAprobacionesPageModule)
   },
   {
     path: 'devolucion-prestamo',
-    loadChildren: () => import('./pages/devolucion-prestamo/devolucion-prestamo.module').then( m => m.DevolucionPrestamoPageModule)
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/devolucion-prestamo/devolucion-prestamo.module').then(m => m.DevolucionPrestamoPageModule)
   },
 
-
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
